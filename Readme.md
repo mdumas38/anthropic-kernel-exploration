@@ -4,7 +4,10 @@
 
 This repository contains an exploration of Anthropic's performance kernel challenge. The goal was not to win the benchmark, but to understand the boundary between low-level kernel optimization and invariant-oriented system design—where technique meets structure.
 
-The task: optimize a simulated tree-traversal kernel running on a custom VLIW SIMD architecture, measured in clock cycles. Starting point: **147,734 cycles**. Ending point: **64,383 cycles** (~225% improvement).
+The task: optimize a simulated tree-traversal kernel running on a custom VLIW SIMD architecture, measured in clock cycles. 
+- Starting point: **147,734 cycles**. 
+- Ending point: **64,383 cycles** (~225% improvement).
+
 
 ## What the Challenge Measures
 
