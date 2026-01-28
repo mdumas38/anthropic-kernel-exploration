@@ -80,7 +80,7 @@ The published benchmarks show Claude models at 1,500-2,000 cycles after hours of
 
 **I chose to stop at the point where further gains required sacrificing generality.**
 
-This is not quitting — it's a principled boundary. Real systems serialize at API boundaries and parallelize internally. This kernel demonstrates that principle: tight local optimization (64k cycles) that doesn't sacrifice readability or correctness.
+This is not quitting; it's a principled boundary. Real systems serialize at API boundaries and parallelize internally. This kernel demonstrates that principle: tight local optimization (64k cycles) that doesn't sacrifice readability or correctness.
 
 ## What I Learned
 
@@ -88,19 +88,15 @@ This is not quitting — it's a principled boundary. Real systems serialize at A
 
 The original kernel treated them as intertwined. Separating them (explicit load phases → hash phases → compute phases) made optimization mechanical rather than intuitive.
 
-### 2. Register Aliasing is Invisible Until It Breaks
-
-The `idx_*_cur` / `idx_*_next` split was necessary because the VLIW scheduler couldn't detect that I was reusing a register while it still had live dependents. This is a profound lesson: **the scheduler is honest about dependencies, but only if the code is structured honestly**.
-
-### 3. Traces Make Time and State Legible Simultaneously
+### 2. Traces Make Time and State Legible Simultaneously
 
 Perfetto showed me something that text-based analysis never could: when loads actually happened relative to hash stages, which ALUs were idle, where register writes stalled the pipeline. This transformed optimization from speculation to observation.
 
-### 4. Where Kernel Optimization Stops Being Leverage
+### 3. Where Kernel Optimization Stops Being Leverage
 
 Below ~2,000 cycles requires micro-architectural tuning (register doubles, software pipelining with explicit prelude/epilog). Above that, the wins come from algorithm restructuring (batching, vectorization, scheduling). The sweet spot (this kernel, 64k→1,500k gap) is where **data dependency analysis meets latency hiding**.
 
-### 5. Why Real Systems Serialize at Boundaries and Parallelize Internally
+### 4. Why Real Systems Serialize at Boundaries and Parallelize Internally
 
 This kernel forced that principle to the surface. I couldn't parallelize the loop structure itself (batch is sequential by definition). But I could pipeline it internally. That's the pattern everywhere in systems: serialization at the interface, parallelism within.
 
@@ -166,7 +162,7 @@ For reference, the original challenge measures performance against:
 - **Claude Opus 4.5** (aggressive, 11.5hr): 1,487 cycles
 - **Best seen** (unconfirmed): ~1,300 cycles
 
-This repo achieves **64,383 cycles** — a meaningful 3.5x improvement over the baseline, respecting invariants and structure throughout.
+This repo achieves **64,383 cycles** — a meaningful 2.25x improvement over the baseline, respecting invariants and structure throughout.
 
 ## Key Files to Read First
 
